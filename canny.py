@@ -98,8 +98,21 @@ for f in os.listdir("./data/train/original"):
     for i in xrange(0,len(xs)-1,1):
         print xs[i],xs[i+1]
         crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
-        show_img(crop_img)
+        #show_img(crop_img)
 
+        kernel = np.ones((5,5),np.uint8)
+        #opening_cropped_rot_blurred = cv2.morphologyEx(crop_img, cv2.MORPH_OPEN, kernel)
+
+        circles = cv2.HoughCircles(crop_img, cv2.HOUGH_GRADIENT, 1.7, 2,
+                                   param1=100, param2=30,
+                                   minRadius=0, maxRadius=20)
+        
+        circles = np.uint16(np.around(circles))
+
+        for c in circles:
+            for x,y,r in c:
+                cv2.circle(crop_img,(x,y),r,(0,255,0),2)
+        show_img(crop_img)
 
 
 # for i in circles[0, :]:
