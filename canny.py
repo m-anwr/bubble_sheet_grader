@@ -90,7 +90,7 @@ for f in os.listdir("./data/train/original"):
         for x1, y1, x2, y2 in l:
             if (x1 == x2):
                 if (min(xs, key=lambda x:abs(x-x1))+20<x1) or (x1<min(xs, key=lambda x:abs(x-x1))-20):
-                    xs.append(x1)
+                    xs.append(x1+2)
             # cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
 
     # show_img(rot_blurred)
