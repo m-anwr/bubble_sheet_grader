@@ -100,19 +100,24 @@ for f in os.listdir("./data/train/original"):
         crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
         #show_img(crop_img)
 
-        kernel = np.ones((5,5),np.uint8)
         #opening_cropped_rot_blurred = cv2.morphologyEx(crop_img, cv2.MORPH_OPEN, kernel)
 
-        circles = cv2.HoughCircles(crop_img, cv2.HOUGH_GRADIENT, 1.7, 2,
-                                   param1=100, param2=30,
-                                   minRadius=0, maxRadius=20)
-        
-        circles = np.uint16(np.around(circles))
+        #circles = cv2.HoughCircles(crop_img, cv2.HOUGH_GRADIENT, 1.7, 2,
+        #                           param1=100, param2=30,
+        #                           minRadius=0, maxRadius=20)
+    kernel = np.ones((5,5),np.uint8)        
+    threshold_crop_img = cv2.adaptiveThreshold(crop_img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv2.THRESH_BINARY,11,2)
+    opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
 
-        for c in circles:
-            for x,y,r in c:
-                cv2.circle(crop_img,(x,y),r,(0,255,0),2)
-        show_img(crop_img)
+    show_img(opening_threshold_crop_img)
+
+        #circles = np.uint16(np.around(circles))
+
+        #for c in circles:
+        #    for x,y,r in c:
+        #        cv2.circle(crop_img,(x,y),r,(0,255,0),2)
+        #show_img(crop_img)
 
 
 # for i in circles[0, :]:
