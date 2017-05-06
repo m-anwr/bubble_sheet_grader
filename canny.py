@@ -98,34 +98,13 @@ for f in os.listdir("./data/train/original"):
     for i in xrange(0,len(xs)-1,1):
         print xs[i],xs[i+1]
         crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
-        #show_img(crop_img)
 
-        #opening_cropped_rot_blurred = cv2.morphologyEx(crop_img, cv2.MORPH_OPEN, kernel)
+    kernel = np.ones((5,5),np.uint8)      
 
-        #circles = cv2.HoughCircles(crop_img, cv2.HOUGH_GRADIENT, 1.7, 2,
-        #                           param1=100, param2=30,
-        #                           minRadius=0, maxRadius=20)
-    kernel = np.ones((5,5),np.uint8)        
-    threshold_crop_img = cv2.adaptiveThreshold(crop_img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-            cv2.THRESH_BINARY,11,2)
+    threshold_crop_img = cv2.threshold(crop_img, 0, 255,
+    cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+
     opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
 
     show_img(opening_threshold_crop_img)
 
-        #circles = np.uint16(np.around(circles))
-
-        #for c in circles:
-        #    for x,y,r in c:
-        #        cv2.circle(crop_img,(x,y),r,(0,255,0),2)
-        #show_img(crop_img)
-
-
-# for i in circles[0, :]:
-    # print("inloopp")
-    # # draw the outer circle
-    # cv2.circle(blurred, (i[0], i[1]), i[2], (0, 255, 0), 2)
-    # # draw the center of the circle
-
-
-# plt.imshow(blurred, cmap='gray')
-# plt.show()
