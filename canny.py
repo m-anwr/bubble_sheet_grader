@@ -64,31 +64,25 @@ for f in os.listdir("./data/train/original"):
 
     ## get mid point between the two centers
     mid_p = ((p_l[0] + p_r[0])/2.0, (p_l[1] + p_r[1])/2.0)
-    rot_angle = None
-    if p_l[1] > mid_p[1]:
-        rot_angle = np.arctan((p_l[1] - mid_p[1]) / (mid_p[0] - p_l[0]))
-    else:
-        rot_angle = np.arctan((p_r[1] - mid_p[1]) / (p_r[0] - mid_p[0]))
 
+    rot_angle = np.arctan((p_r[1] - mid_p[1]) / (p_r[0] - mid_p[0]))
     rot_angle = rot_angle * 180 / np.pi
+
     print(f)
-    print(rot_angle)
+    #print(rot_angle)
 
     rot_blurred = rotate_bound(blurred, rot_angle)
 
     rot_blurred = rot_blurred[p_l[1]-850:p_r[1]-100,
                               p_l[0]-130:p_r[0]+130]
-    #show_img(rot_blurred)
+
 
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
     lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
-                            minLineLength=100, maxLineGap=2)
+                            minLineLength=50, maxLineGap=2)
 
     height, width = rot_blurred.shape
     xs = [width]
-
-
-    # print(len(lines))
 
     for l in lines:
         for x1, y1, x2, y2 in l:
@@ -97,14 +91,14 @@ for f in os.listdir("./data/train/original"):
                 #detecting the two main vertical lines in the image
                 if (min(xs, key=lambda x:abs(x-x1))+20<x1) or (x1<min(xs, key=lambda x:abs(x-x1))-20):
                     xs.append(x1+2)
-            # cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
+            #cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
 
     #sorting the lines coordinates
     xs.sort()
     for i in xrange(0,len(xs)-1,1):
-        print xs[i],xs[i+1]
         # cropping the image
         crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
+
 
     # kernel for openning
     kernel = np.ones((5,5),np.uint8)      
