@@ -78,7 +78,7 @@ for f in os.listdir("./data/train/original"):
 
     rot_blurred = rot_blurred[p_l[1]-850:p_r[1]-100,
                               p_l[0]-130:p_r[0]+130]
-    # show_img(rot_blurred)
+    #show_img(rot_blurred)
 
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
     lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
@@ -110,11 +110,14 @@ for f in os.listdir("./data/train/original"):
     kernel = np.ones((5,5),np.uint8)      
 
     # Thresholding the image (inverse)
-    threshold_crop_img = cv2.threshold(crop_img, 0, 255,
-    cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+    threshold_crop_img = cv2.adaptiveThreshold(crop_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11 ,2)
+    show_img(threshold_crop_img)
+    
 
     # openning
-    opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
+    _threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
+    opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
 
     #show_img(opening_threshold_crop_img)
 
@@ -128,7 +131,7 @@ for f in os.listdir("./data/train/original"):
         (x, y, w, h) = cv2.boundingRect(c)
         ar = w / float(h)
 
-        if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.1:
+        if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.2:
             questionCnts.append(c)
     
     # color to draw the contours
