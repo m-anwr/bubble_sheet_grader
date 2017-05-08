@@ -106,37 +106,37 @@ for f in os.listdir("./data/train/original"):
         # cropping the image
         crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
 
-    # kernel for openning
-    kernel = np.ones((5,5),np.uint8)      
+        # kernel for openning
+        kernel = np.ones((5,5),np.uint8)      
 
-    # Thresholding the image (inverse)
-    threshold_crop_img = cv2.threshold(crop_img, 0, 255,
-    cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+        # Thresholding the image (inverse)
+        threshold_crop_img = cv2.threshold(crop_img, 0, 255,
+        cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
-    # openning
-    opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
+        # openning
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
 
-    #show_img(opening_threshold_crop_img)
+        #show_img(opening_threshold_crop_img)
 
-    # getting contours
-    cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
-    cv2.CHAIN_APPROX_SIMPLE)
-    cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-    questionCnts = []
-     
-    for c in cnts:
-        (x, y, w, h) = cv2.boundingRect(c)
-        ar = w / float(h)
+        # getting contours
+        cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+        questionCnts = []
+         
+        for c in cnts:
+            (x, y, w, h) = cv2.boundingRect(c)
+            ar = w / float(h)
 
-        if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.1:
-            questionCnts.append(c)
-    
-    # color to draw the contours
-    color = (0, 0, 255)
-    for i in xrange(0,len(questionCnts)-1,1):
-        cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
+            if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.1:
+                questionCnts.append(c)
+        
+        # color to draw the contours
+        color = (0, 0, 255)
+        for i in xrange(0,len(questionCnts)-1,1):
+            cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
 
-    show_img(crop_img)
+        show_img(crop_img)
 
 
 
