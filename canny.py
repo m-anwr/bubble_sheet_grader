@@ -34,6 +34,9 @@ def rotate_bound(image, angle):
 
     # perform the actual rotation and return the image
     return cv2.warpAffine(image, M, (nW, nH))
+def grade_15(img):
+    grade = 0
+    return grade
 
 for f in os.listdir("./data/train/original"):
     image = cv2.imread("./data/train/original/" + f)
@@ -100,40 +103,42 @@ for f in os.listdir("./data/train/original"):
         crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
 
 
-    # kernel for openning
-    kernel = np.ones((5,5),np.uint8)      
+        # kernel for openning
+        kernel = np.ones((5,5),np.uint8)  
+        kernel2 =  np.ones((2,2),np.uint8) 
 
-    # Thresholding the image (inverse)
-    #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-    threshold_crop_img = cv2.adaptiveThreshold(crop_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11 ,2)
-    show_img(threshold_crop_img)
-    
+        # Thresholding the image (inverse)
+        #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+        threshold_crop_img = cv2.adaptiveThreshold(crop_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11 ,2)
+        show_img(threshold_crop_img)
+        
 
-    # openning
-    _threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel)
-    opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
+        # closing
+        
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        #opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations= 1)
+        show_img(opening_threshold_crop_img)
 
-    #show_img(opening_threshold_crop_img)
+        # getting contours
+        cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+        questionCnts = []
+         
+        for c in cnts:
+            (x, y, w, h) = cv2.boundingRect(c)
+            ar = w / float(h)
 
-    # getting contours
-    cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
-    cv2.CHAIN_APPROX_SIMPLE)
-    cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-    questionCnts = []
-     
-    for c in cnts:
-        (x, y, w, h) = cv2.boundingRect(c)
-        ar = w / float(h)
+            if w >= 10 and h >= 10 and ar >= 0.7 and ar <= 1.5:
+                questionCnts.append(c)
+        
+        # color to draw the contours
+        color = (0, 0, 255)
+        for i in xrange(0,len(questionCnts)-1,1):
+            cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
 
-        if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.2:
-            questionCnts.append(c)
-    
-    # color to draw the contours
-    color = (0, 0, 255)
-    for i in xrange(0,len(questionCnts)-1,1):
-        cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
-
-    show_img(crop_img)
+        show_img(crop_img)
 
 
 
