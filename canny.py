@@ -134,13 +134,21 @@ for f in os.listdir("./data/train/original"):
         # closing
         #opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
         #opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
+        opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel, iterations = 1)
+        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel, iterations = 1)
+        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
+        opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel2, iterations = 1)
+        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
+        opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel2, iterations = 1)
+        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel, iterations = 1)
-        show_img(opening_threshold_crop_img)
+        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel2, iterations = 1)
+        
+        #show_img(opening_threshold_crop_img)
 
         # getting contours
         cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_TREE,
@@ -152,7 +160,7 @@ for f in os.listdir("./data/train/original"):
             (x, y, w, h) = cv2.boundingRect(c)
             ar = w / float(h)
 
-            if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.7:
+            if w >= 7 and h >= 7 and ar >= 0.4 and ar <= 1.9:
                 questionCnts.append(c)
         
         # color to draw the contours
@@ -165,3 +173,4 @@ for f in os.listdir("./data/train/original"):
         # img_number +=1 
 
         show_img(crop_img)
+        show_img(opening_threshold_crop_img)
