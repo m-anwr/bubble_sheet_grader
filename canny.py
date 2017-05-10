@@ -38,6 +38,8 @@ def grade_15(img):
     grade = 0
     return grade
 
+#img_number = 0
+
 for f in os.listdir("./data/train/original"):
     image = cv2.imread("./data/train/original/" + f)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -77,7 +79,7 @@ for f in os.listdir("./data/train/original"):
     rot_blurred = rotate_bound(blurred, rot_angle)
 
     height, width = rot_blurred.shape
-    rot_blurred = rot_blurred[0:height,p_l[0]-130:p_r[0]+150]
+    rot_blurred = rot_blurred[0:height-150,p_l[0]-130:p_r[0]+130]
 
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
     lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
@@ -93,6 +95,7 @@ for f in os.listdir("./data/train/original"):
                 #detecting the main horizontal lines in the image
                 if (min(ys, key=lambda x:abs(x-y1))+20<y1) or (y1<min(ys, key=lambda x:abs(x-y1))-20):
                     ys.append(y1+2)
+            #cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
 
     ys.sort()
     rot_blurred = rot_blurred[ys[len(ys)-2]:ys[len(ys)-1], 0 :width]
@@ -105,16 +108,18 @@ for f in os.listdir("./data/train/original"):
             # extracting vertical lines only
             if (x1 == x2):
                 #detecting the two main vertical lines in the image
-                if (min(xs, key=lambda x:abs(x-x1))+20<x1) or (x1<min(xs, key=lambda x:abs(x-x1))-20):
-                    xs.append(x1+2)
-            #cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
-
+                if ((x1>0) and (x1<100)) or ((x1>300) and (x1<450)) or ((x1>600) and (x1<750)):
+                    if (min(xs, key=lambda x:abs(x-x1))+20<x1) or (x1<min(xs, key=lambda x:abs(x-x1))-20):
+                        xs.append(x1+2)
+                        #cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
+    
     #sorting the lines coordinates
     xs.sort()
     for i in xrange(0,len(xs)-1,1):
         # cropping the image
-        crop_img = rot_blurred[0:height, xs[i]+100 :xs[i+1]]
-
+        crop_img = rot_blurred[0:height, xs[i] :xs[i+1]]
+        crop_height, crop_width = crop_img.shape
+        crop_img = crop_img[65:700, 100 :crop_width]
 
         # kernel for openning
         kernel = np.ones((2,2),np.uint8)  
@@ -126,7 +131,6 @@ for f in os.listdir("./data/train/original"):
         threshold_crop_img = cv2.adaptiveThreshold(crop_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11 ,2)
         #show_img(threshold_crop_img)
         
-
         # closing
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
@@ -155,6 +159,10 @@ for f in os.listdir("./data/train/original"):
         color = (0, 255, 255)
         for i in xrange(0,len(questionCnts)-1,1):
             cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
+
+        # name = "saved/" + str(img_number) + ".png"
+        # cv2.imwrite(name, crop_img)
+        # img_number +=1 
 
         show_img(crop_img)
         show_img(opening_threshold_crop_img)
