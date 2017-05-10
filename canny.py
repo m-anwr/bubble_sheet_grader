@@ -79,7 +79,7 @@ for f in os.listdir("./data/train/original"):
     rot_blurred = rotate_bound(blurred, rot_angle)
 
     height, width = rot_blurred.shape
-    rot_blurred = rot_blurred[0:height-150,p_l[0]-130:p_r[0]+130]
+    rot_blurred = rot_blurred[0:height-150,p_l[0]-130:p_r[0]+150]
 
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
     lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
@@ -112,7 +112,7 @@ for f in os.listdir("./data/train/original"):
                     if (min(xs, key=lambda x:abs(x-x1))+20<x1) or (x1<min(xs, key=lambda x:abs(x-x1))-20):
                         xs.append(x1+2)
                         #cv2.line(rot_blurred,(x1,y1),(x2,y2),(0,255,0),2)
-    
+
     #sorting the lines coordinates
     xs.sort()
     for i in xrange(0,len(xs)-1,1):
