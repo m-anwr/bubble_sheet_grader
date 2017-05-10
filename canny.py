@@ -76,17 +76,30 @@ for f in os.listdir("./data/train/original"):
 
     rot_blurred = rotate_bound(blurred, rot_angle)
 
-    rot_blurred = rot_blurred[p_l[1]-800:p_r[1]-130,
-                              p_l[0]-130:p_r[0]+150]
-
+    height, width = rot_blurred.shape
+    rot_blurred = rot_blurred[0:height,p_l[0]-130:p_r[0]+150]
 
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
     lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
                             minLineLength=50, maxLineGap=2)
-
-    height, width = rot_blurred.shape
+    
     xs = [width]
+    ys = [0]
 
+    for l in lines:
+        for x1, y1, x2, y2 in l:
+            # extracting horizontal lines only
+            if (y1 == y2):
+                #detecting the main horizontal lines in the image
+                if (min(ys, key=lambda x:abs(x-y1))+20<y1) or (y1<min(ys, key=lambda x:abs(x-y1))-20):
+                    ys.append(y1+2)
+
+    ys.sort()
+    rot_blurred = rot_blurred[ys[len(ys)-2]:ys[len(ys)-1], 0 :width]
+
+    edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
+    lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
+                            minLineLength=50, maxLineGap=2)
     for l in lines:
         for x1, y1, x2, y2 in l:
             # extracting vertical lines only
@@ -145,6 +158,3 @@ for f in os.listdir("./data/train/original"):
 
         show_img(crop_img)
         show_img(opening_threshold_crop_img)
-
-
-
