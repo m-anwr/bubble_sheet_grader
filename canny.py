@@ -39,6 +39,15 @@ def grade_15(img):
     return grade
 
 #img_number = 0
+file = open("./ModelAnswer.txt", "r")
+ModelAnswer = file.readlines()
+file.close()
+
+ModelAnswers = {}
+
+for answer in ModelAnswer:
+        splitLine = answer.split()
+        ModelAnswers[splitLine[0]] = splitLine[1]
 
 for f in os.listdir("./data/train/original"):
     image = cv2.imread("./data/train/original/" + f)
