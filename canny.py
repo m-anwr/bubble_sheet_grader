@@ -76,8 +76,8 @@ for f in os.listdir("./data/train/original"):
 
     rot_blurred = rotate_bound(blurred, rot_angle)
 
-    rot_blurred = rot_blurred[p_l[1]-850:p_r[1]-100,
-                              p_l[0]-130:p_r[0]+130]
+    rot_blurred = rot_blurred[p_l[1]-800:p_r[1]-130,
+                              p_l[0]-130:p_r[0]+150]
 
 
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
@@ -100,7 +100,7 @@ for f in os.listdir("./data/train/original"):
     xs.sort()
     for i in xrange(0,len(xs)-1,1):
         # cropping the image
-        crop_img = rot_blurred[0:height, xs[i]:xs[i+1]]
+        crop_img = rot_blurred[0:height, xs[i]+100 :xs[i+1]]
 
 
         # kernel for openning
@@ -110,15 +110,17 @@ for f in os.listdir("./data/train/original"):
         # Thresholding the image (inverse)
         #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
         threshold_crop_img = cv2.adaptiveThreshold(crop_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11 ,2)
-        show_img(threshold_crop_img)
+        #show_img(threshold_crop_img)
         
 
         # closing
-        
-        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
-        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
         #opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations= 1)
-        show_img(opening_threshold_crop_img)
+        #show_img(opening_threshold_crop_img)
 
         # getting contours
         cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
