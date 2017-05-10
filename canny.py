@@ -104,8 +104,9 @@ for f in os.listdir("./data/train/original"):
 
 
         # kernel for openning
-        kernel = np.ones((5,5),np.uint8)  
-        kernel2 =  np.ones((2,2),np.uint8) 
+        kernel = np.ones((2,2),np.uint8)  
+        kernel2 =  cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+        kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2,2))
 
         # Thresholding the image (inverse)
         #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
@@ -115,11 +116,13 @@ for f in os.listdir("./data/train/original"):
 
         # closing
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        #opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations= 1)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
         #show_img(opening_threshold_crop_img)
 
         # getting contours
@@ -132,15 +135,16 @@ for f in os.listdir("./data/train/original"):
             (x, y, w, h) = cv2.boundingRect(c)
             ar = w / float(h)
 
-            if w >= 10 and h >= 10 and ar >= 0.7 and ar <= 1.5:
+            if w >= 15 and h >= 13 and ar >= 0.7 and ar <= 1.5:
                 questionCnts.append(c)
         
         # color to draw the contours
-        color = (0, 0, 255)
+        color = (0, 255, 255)
         for i in xrange(0,len(questionCnts)-1,1):
             cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
 
         show_img(crop_img)
+        show_img(opening_threshold_crop_img)
 
 
 
