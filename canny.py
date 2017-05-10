@@ -119,12 +119,12 @@ for f in os.listdir("./data/train/original"):
         # cropping the image
         crop_img = rot_blurred[0:height, xs[i] :xs[i+1]]
         crop_height, crop_width = crop_img.shape
-        crop_img = crop_img[65:700, 100 :crop_width]
+        crop_img = crop_img[60:680, 100 :crop_width]
 
         # kernel for openning
-        kernel = np.ones((2,2),np.uint8)  
-        kernel2 =  cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
-        kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2,2))
+        kernel = np.ones((3,3),np.uint8)  
+        kernel2 =  np.ones((2,2),np.uint8)
+        kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
 
         # Thresholding the image (inverse)
         #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
@@ -132,18 +132,18 @@ for f in os.listdir("./data/train/original"):
         #show_img(threshold_crop_img)
         
         # closing
+        #opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
+        #opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        #show_img(opening_threshold_crop_img)
+        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel, iterations = 1)
+        show_img(opening_threshold_crop_img)
 
         # getting contours
-        cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
+        cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_TREE,
         cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
         questionCnts = []
@@ -152,7 +152,7 @@ for f in os.listdir("./data/train/original"):
             (x, y, w, h) = cv2.boundingRect(c)
             ar = w / float(h)
 
-            if w >= 15 and h >= 13 and ar >= 0.7 and ar <= 1.5:
+            if w >= 10 and h >= 10 and ar >= 0.4 and ar <= 1.7:
                 questionCnts.append(c)
         
         # color to draw the contours
@@ -165,4 +165,3 @@ for f in os.listdir("./data/train/original"):
         # img_number +=1 
 
         show_img(crop_img)
-        show_img(opening_threshold_crop_img)
