@@ -35,16 +35,6 @@ def rotate_bound(image, angle):
     # perform the actual rotation and return the image
     return cv2.warpAffine(image, M, (nW, nH))
 
-def grade_15(img, cnts):
-    grade = 0
-    
-    for cnt in cnts:
-        (x,y),radius = cv2.minEnclosingCircle(cnt)
-        center = (int(x),int(y))
-        radius = int(radius)
-        cv2.circle(img,center,radius,(0,255,0),2)
-
-    return grade
 
 #img_number = 0
 file = open("./ModelAnswer.txt", "r")
@@ -56,6 +46,17 @@ ModelAnswers = {}
 for answer in ModelAnswer:
         splitLine = answer.split()
         ModelAnswers[splitLine[0]] = splitLine[1]
+
+def grade_15(img, cnts, part):
+    grade = 0
+    
+    for cnt in cnts:
+        (x,y),radius = cv2.minEnclosingCircle(cnt)
+        center = (int(x),int(y))
+        radius = int(radius)
+        cv2.circle(img,center,radius,(0,255,0),2)
+
+    return grade
 
 for f in os.listdir("./data/train/original"):
     image = cv2.imread("./data/train/original/" + f)
@@ -189,7 +190,7 @@ for f in os.listdir("./data/train/original"):
             if w >= 8 and h >= 8 and ar >= 0.4 and ar <= 1.9:
                 questionCnts.append(c)
         questionCnts = contours.sort_contours(questionCnts, method="top-to-bottom")[0]
-        grade_15(opening_threshold_crop_img, questionCnts)
+        #grade_15(opening_threshold_crop_img, questionCnts)
         # color to draw the contours
         color = (0, 255, 255)
         for i in xrange(0,len(questionCnts)-1,1):
