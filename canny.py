@@ -36,7 +36,7 @@ def rotate_bound(image, angle):
     return cv2.warpAffine(image, M, (nW, nH))
 
 
-#img_number = 0
+
 file = open("./ModelAnswer.txt", "r")
 ModelAnswer = file.readlines()
 file.close()
@@ -49,18 +49,33 @@ for answer in ModelAnswer:
 
 def grade_15(img, cnts, part):
     grade = 0
-    
-    for cnt in cnts:
-        (x,y),radius = cv2.minEnclosingCircle(cnt)
-        center = (int(x),int(y))
-        radius = int(radius)
-        cv2.circle(img,center,radius,(0,255,0),2)
+    if p == 0:
+        q = 1
+    elif p == 1:
+        q =16
+    else:
+        q = 41
+    corAns = ModelAnswers[str(q)]
+    if len(cnts)==60:
+        for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
+            cnts = contours.sort_contours(questionCnts[i:i + 5])[0]
+            bubbled = None
+            for (j, c) in enumerate(cnts):
+                mask = np.zeros(thresh.shape, dtype="uint8")
+                cv2.drawContours(mask, [c], -1, 255, -1)
+                mask = cv2.bitwise_and(img, img, mask=mask)
+                total = cv2.countNonZero(mask)
+                if bubbled is None or ((total - bubbled[0]) > 10):
+                    bubbled = (total, j)
+                    
 
     return grade
-
+img_number = 0
 for f in os.listdir("./data/train/original"):
     #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
     image = cv2.imread("./data/train/original/" + f)
+    p = 0
+    mark = 0
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
@@ -157,7 +172,7 @@ for f in os.listdir("./data/train/original"):
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
-        opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel, iterations = 1)
+        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel, iterations = 1)
         opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel, iterations = 1)
         opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
         opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel2, iterations = 1)
@@ -171,7 +186,7 @@ for f in os.listdir("./data/train/original"):
         opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel3, iterations = 1)
         #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel3, iterations = 1)
         
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
+        #opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
         opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
@@ -192,16 +207,17 @@ for f in os.listdir("./data/train/original"):
             if w >= 15 and h >= 15 and ar >= 0.4 and ar <= 1.7:
                 questionCnts.append(c)
         questionCnts = contours.sort_contours(questionCnts, method="top-to-bottom")[0]
-        #grade_15(opening_threshold_crop_img, questionCnts)
+        mark = mark + grade_15(opening_threshold_crop_img, questionCnts, p)
+        p = p + 1
         # color to draw the contours
         color = (0, 255, 255)
         for i in xrange(0,len(questionCnts),1):
             cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
 
-        # name = "saved/" + str(img_number) + ".png"
-        # cv2.imwrite(name, crop_img)
-        # img_number +=1
+        name = "./data/saved/" + str(img_number) + ".png"
+        cv2.imwrite(name, crop_img)
+        img_number +=1
         print len(questionCnts)==60, len(questionCnts)
 
-        show_img(crop_img)
-        show_img(opening_threshold_crop_img)
+        #show_img(crop_img)
+        #show_img(opening_threshold_crop_img)
