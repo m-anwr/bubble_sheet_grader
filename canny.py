@@ -59,6 +59,7 @@ def grade_15(img, cnts, part):
     return grade
 
 for f in os.listdir("./data/train/original"):
+    #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
     image = cv2.imread("./data/train/original/" + f)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -173,12 +174,13 @@ for f in os.listdir("./data/train/original"):
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
         opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
-        #opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
+        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
+        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         
         #show_img(opening_threshold_crop_img)
 
         # getting contours
-        cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_TREE,
+        cnts = cv2.findContours(opening_threshold_crop_img.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
         questionCnts = []
@@ -187,19 +189,19 @@ for f in os.listdir("./data/train/original"):
             (x, y, w, h) = cv2.boundingRect(c)
             ar = w / float(h)
 
-            if w >= 8 and h >= 8 and ar >= 0.4 and ar <= 1.9:
+            if w >= 15 and h >= 15 and ar >= 0.4 and ar <= 1.7:
                 questionCnts.append(c)
         questionCnts = contours.sort_contours(questionCnts, method="top-to-bottom")[0]
         #grade_15(opening_threshold_crop_img, questionCnts)
         # color to draw the contours
         color = (0, 255, 255)
-        for i in xrange(0,len(questionCnts)-1,1):
+        for i in xrange(0,len(questionCnts),1):
             cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
 
         # name = "saved/" + str(img_number) + ".png"
         # cv2.imwrite(name, crop_img)
         # img_number +=1
-        print len(questionCnts) 
+        print len(questionCnts)==60, len(questionCnts)
 
         show_img(crop_img)
         show_img(opening_threshold_crop_img)
