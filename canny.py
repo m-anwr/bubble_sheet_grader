@@ -87,6 +87,7 @@ def grade_15(origin, img, cnts, part):
     if len(cnts) == 60:
         for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
             corAns = ModelAnswers[str(q + s)]
+            multipleSelected = False
             cnts = contours.sort_contours(questionCnts[i:i + 4])[0]
             bubbled = None
             for (j, c) in enumerate(cnts):
@@ -105,13 +106,17 @@ def grade_15(origin, img, cnts, part):
                 #total = np.count_nonzero((img == [255]).all())
                 #print "total", total
                 #print mask.shape
+                if bubbled is not None and abs(total - bubbled[0] < 35) and total > 255 and bubbled[0] > 255:
+                    multipleSelected = True
+                        
                 if bubbled is None or (total > bubbled[0]):
                     bubbled = (total, j)
             color = (10)
             k = corAns
             if bub[k] == bubbled[1] + 1:
                 color = (255)
-                grade = grade + 1
+                if bubbled[0] > 115 and not multipleSelected:
+                    grade = grade + 1
             cv2.drawContours(origin, [cnts[bubbled[1]]], -1, color, 3)
         #cv2.imshow("Exam", origin)
 
@@ -119,7 +124,7 @@ def grade_15(origin, img, cnts, part):
 
         return grade
     else:
-        return 7
+        return 8
 
 # loading training real marks in a dict
 training_real_marks = {}
@@ -127,7 +132,7 @@ with open("train_marks.csv", "rb") as trm:
     r = csv.reader(trm, delimiter=",")
     for row in r:
         training_real_marks[row[0]] = row[1]
-
+accErr = 0
 img_number = 0
 for f in os.listdir("./data/train/original"):
     #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
@@ -262,7 +267,7 @@ for f in os.listdir("./data/train/original"):
         print("Correct!!")
     else:
         print("HAHAHAHAHA Error, real mark {} Got {} :p el 3yal htes2at xD\n".format(training_real_marks[f], mark))
-
+        accErr = accErr + np.abs(int(training_real_marks[f]) - mark)
     CVSExport.add_mark(f, mark)
-
+print accErr
 CVSExport.write_csv()
