@@ -2,9 +2,25 @@ import cv2
 import numpy as np
 import imutils
 from matplotlib import pyplot as plt
-from imutils.perspective import four_point_transform
 from imutils import contours
 import os
+import csv
+
+
+class CVSExport:
+    marks = []
+
+    @classmethod
+    def add_mark(cls, filename, mark):
+        cls.marks.append((filename, mark))
+
+    @classmethod
+    def write_csv(cls):
+        with open('output.csv', 'wb') as f:
+            w = csv.writer(f, delimiter=",")
+            w.writerow(("FileName", "Mark"))
+            for mark in cls.marks:
+                w.writerow(mark)
 
 
 def show_img(img):
@@ -70,9 +86,9 @@ def grade_15(origin,img, cnts, part):
                 #ellipse = cv2.fitEllipse(c)
                 #cv2.ellipse(mask,ellipse,(255),-1)
                 cv2.drawContours(mask, [c], -1, (255), -1)
-                                
+
                 mask = cv2.erode(mask, kernel2, iterations = 1)
-                
+
                 cv2.imshow("Mask", mask)
                 cv2.waitKey(0)
                 mask = cv2.bitwise_and(img, mask)
@@ -138,7 +154,7 @@ for f in os.listdir("./data/train/original"):
     edged = cv2.Canny(rot_blurred, threshold1=50, threshold2=150)
     lines = cv2.HoughLinesP(edged, rho=1, theta=np.pi/180, threshold=100,
                             minLineLength=50, maxLineGap=2)
-    
+
     xs = [width]
     ys = [0]
 
@@ -176,7 +192,7 @@ for f in os.listdir("./data/train/original"):
         crop_img = crop_img[60:680, 100 :crop_width]
 
         # kernel for openning
-        kernel = np.ones((3,3),np.uint8)  
+        kernel = np.ones((3,3),np.uint8)
         kernel2 =  np.ones((2,2),np.uint8)
         kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
         kernel5 = cv2.getStructuringElement(cv2.MORPH_CROSS,(5,5))
@@ -185,9 +201,9 @@ for f in os.listdir("./data/train/original"):
         #th, threshold_crop_img = cv2.threshold(crop_img, 100, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
         threshold_crop_img = cv2.adaptiveThreshold(crop_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11 ,2)
         #show_img(threshold_crop_img)
-        
+
         # closing
-        
+
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
         #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel3, iterations = 1)
@@ -198,7 +214,7 @@ for f in os.listdir("./data/train/original"):
         cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
         questionCnts = []
-         
+
         for c in cnts:
             (x, y, w, h) = cv2.boundingRect(c)
             ar = w / float(h)
@@ -211,7 +227,7 @@ for f in os.listdir("./data/train/original"):
         # color to draw the contours
         color = (0, 255, 255)
         for i in xrange(0,len(questionCnts),1):
-            cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
+            cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)
 
         #name = "./data/saved/" + str(img_number) + ".png"
         #cv2.imwrite(name, crop_img)
@@ -220,3 +236,5 @@ for f in os.listdir("./data/train/original"):
 
         #show_img(crop_img)
         #show_img(opening_threshold_crop_img)
+
+CVSExport.write_csv()
