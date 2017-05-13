@@ -16,7 +16,7 @@ class CVSExport:
 
     @classmethod
     def write_csv(cls):
-        with open('output.csv', 'wb') as f:
+        with open('./output.csv', 'wb') as f:
             w = csv.writer(f, delimiter=",")
             w.writerow(("FileName", "Mark"))
             for mark in cls.marks:
@@ -103,8 +103,8 @@ def grade_15(origin,img, cnts, part):
                 #cv2.waitKey(0)
                 total = cv2.countNonZero(mask)
                 #total = np.count_nonzero((img == [255]).all())
-                print "total", total
-                print mask.shape
+                #print "total", total
+                #print mask.shape
                 if bubbled is None or (total > bubbled[0]):
                     bubbled = (total, j)
             color = (10)
@@ -113,9 +113,9 @@ def grade_15(origin,img, cnts, part):
                 color = (255)
                 grade = grade + 1
             cv2.drawContours(origin, [cnts[bubbled[1]]], -1, color, 3)
-        cv2.imshow("Exam", origin)
+        #cv2.imshow("Exam", origin)
         
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
         return grade
     else:
@@ -250,5 +250,6 @@ for f in os.listdir("./data/train/original"):
 
         #show_img(crop_img)
         #show_img(opening_threshold_crop_img)
+    CVSExport.add_mark(f, mark)
 
 CVSExport.write_csv()
