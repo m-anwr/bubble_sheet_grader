@@ -19,7 +19,7 @@ class CVSExport:
         with open('./output.csv', 'wb') as f:
             w = csv.writer(f, delimiter=",")
             w.writerow(("FileName", "Mark"))
-            for mark in cls.marks:
+            for mark in sorted(cls.marks, key=lambda tup: tup[0]):
                 w.writerow(mark)
 
 
@@ -52,7 +52,6 @@ def rotate_bound(image, angle):
     return cv2.warpAffine(image, M, (nW, nH))
 
 
-
 file = open("./ModelAnswer.txt", "r")
 ModelAnswer = file.readlines()
 file.close()
@@ -63,27 +62,28 @@ for answer in ModelAnswer:
         splitLine = answer.split()
         ModelAnswers[splitLine[0]] = splitLine[1]
 
-def grade_15(origin,img, cnts, part):
+
+def grade_15(origin, img, cnts, part):
     grade = 0
     if p == 0:
         s = 1
     elif p == 1:
-        s =16
+        s = 16
     else:
         s = 31
-    kernel =  np.ones((3,3),np.uint8)
-    kernel2 =  np.ones((2,2),np.uint8)
-    kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    kernel = np.ones((3, 3), np.uint8)
+    kernel2 = np.ones((2, 2), np.uint8)
+    kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
-    #img = cv2.erode(img, kernel, iterations = 2)
+    # img = cv2.erode(img, kernel, iterations=2)
     cv2.imshow("Binary", img)
-        #img = cv2.dilate(img, kernel3, iterations = 3)
-    #img = cv2.erode(img, kernel3, iterations = 1)
+    # img = cv2.dilate(img, kernel3, iterations = 3)
+    # img = cv2.erode(img, kernel3, iterations = 1)
     if len(cnts) == 60:
         for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
             corAns = ModelAnswers[str(q + s)]
@@ -109,17 +109,25 @@ def grade_15(origin,img, cnts, part):
                     bubbled = (total, j)
             color = (10)
             k = corAns
-            if bub[k] == bubbled[1] + 1: 
+            if bub[k] == bubbled[1] + 1:
                 color = (255)
                 grade = grade + 1
             cv2.drawContours(origin, [cnts[bubbled[1]]], -1, color, 3)
         #cv2.imshow("Exam", origin)
-        
+
         #cv2.waitKey(0)
 
         return grade
     else:
         return 7
+
+# loading training real marks in a dict
+training_real_marks = {}
+with open("train_marks.csv", "rb") as trm:
+    r = csv.reader(trm, delimiter=",")
+    for row in r:
+        training_real_marks[row[0]] = row[1]
+
 img_number = 0
 for f in os.listdir("./data/train/original"):
     #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
@@ -250,6 +258,11 @@ for f in os.listdir("./data/train/original"):
 
         #show_img(crop_img)
         #show_img(opening_threshold_crop_img)
+    if int(training_real_marks[f]) == mark:
+        print("Correct!!")
+    else:
+        print("HAHAHAHAHA Error, real mark {} Got {} :p el 3yal htes2at xD\n".format(training_real_marks[f], mark))
+
     CVSExport.add_mark(f, mark)
 
 CVSExport.write_csv()
