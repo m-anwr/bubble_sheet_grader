@@ -71,12 +71,20 @@ def grade_15(origin,img, cnts, part):
         s =16
     else:
         s = 31
-
+    kernel =  np.ones((3,3),np.uint8)
     kernel2 =  np.ones((2,2),np.uint8)
-    kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
-    img = cv2.dilate(img, kernel3, iterations = 3)
-    img = cv2.erode(img, kernel3, iterations = 1)
-    if len(cnts)==60:
+    kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
+    #img = cv2.erode(img, kernel, iterations = 2)
+    cv2.imshow("Binary", img)
+        #img = cv2.dilate(img, kernel3, iterations = 3)
+    #img = cv2.erode(img, kernel3, iterations = 1)
+    if len(cnts) == 60:
         for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
             corAns = ModelAnswers[str(q + s)]
             cnts = contours.sort_contours(questionCnts[i:i + 4])[0]
@@ -87,22 +95,24 @@ def grade_15(origin,img, cnts, part):
                 #cv2.ellipse(mask,ellipse,(255),-1)
                 cv2.drawContours(mask, [c], -1, (255), -1)
 
-                mask = cv2.erode(mask, kernel2, iterations = 1)
-
+                mask = cv2.erode(mask, kernel2, iterations = 2)
                 cv2.imshow("Mask", mask)
                 cv2.waitKey(0)
-                mask = cv2.bitwise_and(img, mask)
+                mask = cv2.bitwise_and(img, img , mask=mask)
+                cv2.imshow("Mask", mask)
+                cv2.waitKey(0)
                 total = cv2.countNonZero(mask)
-                if bubbled is None or ((total > bubbled[0])):
+                #total = np.count_nonzero((img == [255]).all())
+                if bubbled is None or total > bubbled[0]:
                     bubbled = (total, j)
             color = (10)
             k = corAns
-            if bub[k] == bubbled[1]:
+            if bub[k] == bubbled[1] + 1: 
                 color = (255)
                 grade = grade + 1
             cv2.drawContours(origin, [cnts[bub[k] - 1]], -1, color, 3)
         cv2.imshow("Exam", origin)
-        cv2.imshow("Binary", img)
+        
         cv2.waitKey(0)
 
     return grade
