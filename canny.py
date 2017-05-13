@@ -117,7 +117,9 @@ def grade_15(origin,img, cnts, part):
         
         cv2.waitKey(0)
 
-    return grade
+        return grade
+    else:
+        return 7
 img_number = 0
 for f in os.listdir("./data/train/original"):
     #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
