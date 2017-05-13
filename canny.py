@@ -50,11 +50,11 @@ for answer in ModelAnswer:
 def grade_15(origin,img, cnts, part):
     grade = 0
     if p == 0:
-        q = 1
+        s = 1
     elif p == 1:
-        q =16
+        s =16
     else:
-        q = 41
+        s = 31
 
     kernel2 =  np.ones((2,2),np.uint8)
     kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
@@ -62,7 +62,7 @@ def grade_15(origin,img, cnts, part):
     img = cv2.erode(img, kernel3, iterations = 1)
     if len(cnts)==60:
         for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
-            corAns = ModelAnswers[str(q+1)]
+            corAns = ModelAnswers[str(q + s)]
             cnts = contours.sort_contours(questionCnts[i:i + 4])[0]
             bubbled = None
             for (j, c) in enumerate(cnts):
@@ -70,20 +70,19 @@ def grade_15(origin,img, cnts, part):
                 #ellipse = cv2.fitEllipse(c)
                 #cv2.ellipse(mask,ellipse,(255),-1)
                 cv2.drawContours(mask, [c], -1, (255), -1)
-                
-                
+                                
                 mask = cv2.erode(mask, kernel2, iterations = 1)
                 
                 cv2.imshow("Mask", mask)
                 cv2.waitKey(0)
-                mask = cv2.bitwise_and(img, img, mask=mask)
+                mask = cv2.bitwise_and(img, mask)
                 total = cv2.countNonZero(mask)
                 if bubbled is None or ((total > bubbled[0])):
                     bubbled = (total, j)
-            color = (0, 0, 255)
+            color = (10)
             k = corAns
             if bub[k] == bubbled[1]:
-                color = (0, 255, 0)
+                color = (255)
                 grade = grade + 1
             cv2.drawContours(origin, [cnts[bub[k] - 1]], -1, color, 3)
         cv2.imshow("Exam", origin)
