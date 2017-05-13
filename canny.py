@@ -42,12 +42,12 @@ ModelAnswer = file.readlines()
 file.close()
 
 ModelAnswers = {}
-
+bub = {"A": 1, "B" : 2, "C" : 3, "D" : 4}
 for answer in ModelAnswer:
         splitLine = answer.split()
         ModelAnswers[splitLine[0]] = splitLine[1]
 
-def grade_15(img, cnts, part):
+def grade_15(origin,img, cnts, part):
     grade = 0
     if p == 0:
         q = 1
@@ -55,19 +55,34 @@ def grade_15(img, cnts, part):
         q =16
     else:
         q = 41
-    corAns = ModelAnswers[str(q)]
+    
     if len(cnts)==60:
         for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
-            cnts = contours.sort_contours(questionCnts[i:i + 5])[0]
+            corAns = ModelAnswers[str(q+1)]
+            cnts = contours.sort_contours(questionCnts[i:i + 4])[0]
             bubbled = None
             for (j, c) in enumerate(cnts):
-                mask = np.zeros(thresh.shape, dtype="uint8")
-                cv2.drawContours(mask, [c], -1, 255, -1)
+                mask = np.zeros(img.shape, dtype="uint8")
+                cv2.drawContours(mask, [c], -1, (255), -1)
+                
+                kernel2 =  np.ones((3,3),np.uint8)
+                mask = cv2.erode(mask, kernel2, iterations = 1)
+                
+                #cv2.imshow("Mask", mask)
+                #cv2.waitKey(0)
                 mask = cv2.bitwise_and(img, img, mask=mask)
                 total = cv2.countNonZero(mask)
-                if bubbled is None or ((total - bubbled[0]) > 10):
+                if bubbled is None or ((total > bubbled[0])):
                     bubbled = (total, j)
-                    
+            color = (0, 0, 255)
+            k = corAns
+            if bub[k] == bubbled[1]:
+                color = (0, 255, 0)
+                grade = grade + 1
+            cv2.drawContours(origin, [cnts[bub[k] - 1]], -1, color, 3)
+        cv2.imshow("Exam", origin)
+        cv2.imshow("Binary", img)
+        cv2.waitKey(0)
 
     return grade
 img_number = 0
@@ -191,7 +206,7 @@ for f in os.listdir("./data/train/original"):
         opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        
+        #opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
         #show_img(opening_threshold_crop_img)
 
         # getting contours
@@ -207,17 +222,17 @@ for f in os.listdir("./data/train/original"):
             if w >= 15 and h >= 15 and ar >= 0.4 and ar <= 1.7:
                 questionCnts.append(c)
         questionCnts = contours.sort_contours(questionCnts, method="top-to-bottom")[0]
-        mark = mark + grade_15(opening_threshold_crop_img, questionCnts, p)
+        mark = mark + grade_15(crop_img,opening_threshold_crop_img, questionCnts, p)
         p = p + 1
         # color to draw the contours
         color = (0, 255, 255)
         for i in xrange(0,len(questionCnts),1):
             cv2.drawContours(crop_img, [questionCnts[i]], -1, color, 3)            
 
-        name = "./data/saved/" + str(img_number) + ".png"
-        cv2.imwrite(name, crop_img)
-        img_number +=1
-        print len(questionCnts)==60, len(questionCnts)
+        #name = "./data/saved/" + str(img_number) + ".png"
+        #cv2.imwrite(name, crop_img)
+        #img_number +=1
+        #print len(questionCnts)==60, len(questionCnts)
 
         #show_img(crop_img)
         #show_img(opening_threshold_crop_img)
