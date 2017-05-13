@@ -55,7 +55,11 @@ def grade_15(origin,img, cnts, part):
         q =16
     else:
         q = 41
-    
+
+    kernel2 =  np.ones((2,2),np.uint8)
+    kernel3 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+    img = cv2.dilate(img, kernel3, iterations = 3)
+    img = cv2.erode(img, kernel3, iterations = 1)
     if len(cnts)==60:
         for (q, i) in enumerate(np.arange(0, len(questionCnts), 4)):
             corAns = ModelAnswers[str(q+1)]
@@ -63,13 +67,15 @@ def grade_15(origin,img, cnts, part):
             bubbled = None
             for (j, c) in enumerate(cnts):
                 mask = np.zeros(img.shape, dtype="uint8")
+                #ellipse = cv2.fitEllipse(c)
+                #cv2.ellipse(mask,ellipse,(255),-1)
                 cv2.drawContours(mask, [c], -1, (255), -1)
                 
-                kernel2 =  np.ones((3,3),np.uint8)
+                
                 mask = cv2.erode(mask, kernel2, iterations = 1)
                 
-                #cv2.imshow("Mask", mask)
-                #cv2.waitKey(0)
+                cv2.imshow("Mask", mask)
+                cv2.waitKey(0)
                 mask = cv2.bitwise_and(img, img, mask=mask)
                 total = cv2.countNonZero(mask)
                 if bubbled is None or ((total > bubbled[0])):
@@ -182,31 +188,10 @@ for f in os.listdir("./data/train/original"):
         #show_img(threshold_crop_img)
         
         # closing
-        #opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel)
-        #opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
-        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel, iterations = 1)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel, iterations = 1)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
-        opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel2, iterations = 1)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
-        opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel2, iterations = 1)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
-        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
-        opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        #opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel, iterations = 1)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel5, iterations = 1)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel3, iterations = 1)
-        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel3, iterations = 1)
         
-        #opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel2)
-        opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
         opening_threshold_crop_img = cv2.morphologyEx(threshold_crop_img, cv2.MORPH_CLOSE, kernel3)
         opening_threshold_crop_img = cv2.morphologyEx(opening_threshold_crop_img, cv2.MORPH_OPEN, kernel2)
-        #opening_threshold_crop_img = cv2.erode(opening_threshold_crop_img, kernel2, iterations = 1)
+        #opening_threshold_crop_img = cv2.dilate(opening_threshold_crop_img, kernel3, iterations = 1)
         #show_img(opening_threshold_crop_img)
 
         # getting contours
