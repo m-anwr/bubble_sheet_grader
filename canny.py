@@ -96,21 +96,23 @@ def grade_15(origin,img, cnts, part):
                 cv2.drawContours(mask, [c], -1, (255), -1)
 
                 mask = cv2.erode(mask, kernel2, iterations = 2)
-                cv2.imshow("Mask", mask)
-                cv2.waitKey(0)
+                #cv2.imshow("Mask", mask)
+                #cv2.waitKey(0)
                 mask = cv2.bitwise_and(img, img , mask=mask)
-                cv2.imshow("Mask", mask)
-                cv2.waitKey(0)
+                #cv2.imshow("Mask", mask)
+                #cv2.waitKey(0)
                 total = cv2.countNonZero(mask)
                 #total = np.count_nonzero((img == [255]).all())
-                if bubbled is None or total > bubbled[0]:
+                print "total", total
+                print mask.shape
+                if bubbled is None or (total > bubbled[0]):
                     bubbled = (total, j)
             color = (10)
             k = corAns
             if bub[k] == bubbled[1] + 1: 
                 color = (255)
                 grade = grade + 1
-            cv2.drawContours(origin, [cnts[bub[k] - 1]], -1, color, 3)
+            cv2.drawContours(origin, [cnts[bubbled[1]]], -1, color, 3)
         cv2.imshow("Exam", origin)
         
         cv2.waitKey(0)
