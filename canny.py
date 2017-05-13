@@ -106,7 +106,7 @@ def grade_15(origin, img, cnts, part):
                 #total = np.count_nonzero((img == [255]).all())
                 #print "total", total
                 #print mask.shape
-                if bubbled is not None and abs(total - bubbled[0] < 35) and total > 255 and bubbled[0] > 255:
+                if bubbled is not None and abs(total - bubbled[0] < 25) and total > 235 and bubbled[0] > 235:
                     multipleSelected = True
                         
                 if bubbled is None or (total > bubbled[0]):
@@ -114,13 +114,14 @@ def grade_15(origin, img, cnts, part):
             color = (10)
             k = corAns
             if bub[k] == bubbled[1] + 1:
-                color = (255)
+                
                 if bubbled[0] > 115 and not multipleSelected:
                     grade = grade + 1
+                    color = (255)
             cv2.drawContours(origin, [cnts[bubbled[1]]], -1, color, 3)
-        #cv2.imshow("Exam", origin)
+        cv2.imshow("Exam", origin)
 
-        #cv2.waitKey(0)
+        cv2.waitKey(0)
 
         return grade
     else:
@@ -134,9 +135,10 @@ with open("train_marks.csv", "rb") as trm:
         training_real_marks[row[0]] = row[1]
 accErr = 0
 img_number = 0
-for f in os.listdir("./data/train/original"):
+for f in os.listdir("./data/test"):
     #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
-    image = cv2.imread("./data/train/original/" + f)
+    #image = cv2.imread("./data/train/original/" + f)
+    image = cv2.imread("./data/test/" + f)
     p = 0
     mark = 0
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -263,11 +265,11 @@ for f in os.listdir("./data/train/original"):
 
         #show_img(crop_img)
         #show_img(opening_threshold_crop_img)
-    if int(training_real_marks[f]) == mark:
-        print("Correct!!")
-    else:
-        print("HAHAHAHAHA Error, real mark {} Got {} :p el 3yal htes2at xD\n".format(training_real_marks[f], mark))
-        accErr = accErr + np.abs(int(training_real_marks[f]) - mark)
+    #if int(training_real_marks[f]) == mark:
+    #    print("Correct!!")
+    #else:
+    #    print("HAHAHAHAHA Error, real mark {} Got {} :p el 3yal htes2at xD\n".format(training_real_marks[f], mark))
+    #    accErr = accErr + np.abs(int(training_real_marks[f]) - mark)
     CVSExport.add_mark(f, mark)
 print accErr
 CVSExport.write_csv()
