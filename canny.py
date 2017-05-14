@@ -81,7 +81,7 @@ def grade_15(origin, img, cnts, part):
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel3)
     # img = cv2.erode(img, kernel, iterations=2)
-    cv2.imshow("Binary", img)
+    # cv2.imshow("Binary", img)
     # img = cv2.dilate(img, kernel3, iterations = 3)
     # img = cv2.erode(img, kernel3, iterations = 1)
     if len(cnts) == 60:
@@ -108,20 +108,20 @@ def grade_15(origin, img, cnts, part):
                 #print mask.shape
                 if bubbled is not None and abs(total - bubbled[0] < 25) and total > 235 and bubbled[0] > 235:
                     multipleSelected = True
-                        
+
                 if bubbled is None or (total > bubbled[0]):
                     bubbled = (total, j)
             color = (10)
             k = corAns
             if bub[k] == bubbled[1] + 1:
-                
+
                 if bubbled[0] > 115 and not multipleSelected:
                     grade = grade + 1
                     color = (255)
             cv2.drawContours(origin, [cnts[bubbled[1]]], -1, color, 3)
-        cv2.imshow("Exam", origin)
+        # cv2.imshow("Exam", origin)
 
-        cv2.waitKey(0)
+        # cv2.waitKey(0)
 
         return grade
     else:
@@ -136,8 +136,10 @@ with open("train_marks.csv", "rb") as trm:
 accErr = 0
 img_number = 0
 for f in os.listdir("./data/test"):
+# for f in os.listdir("./data/train/original"):
+    print(f)
     #f = "S_21_hppscan114.png" FOR EASIER DEBUGGING
-    #image = cv2.imread("./data/train/original/" + f)
+    # image = cv2.imread("./data/train/original/" + f)
     image = cv2.imread("./data/test/" + f)
     p = 0
     mark = 0
@@ -145,7 +147,7 @@ for f in os.listdir("./data/test"):
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
     circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1, 30,
-                               param1=100, param2=40,
+                               param1=100, param2=35,
                                minRadius=30, maxRadius=50)
 
     # detected big bold circles
@@ -153,12 +155,14 @@ for f in os.listdir("./data/test"):
 
     # should be 2 only
     if len(circles[0, :]) is not 2:
+        print("Warning!! Detected {} circles instead of 2 for rotation".format(len(circles[0, :])))
         next
 
     # getting rotation angle
 
     ## identifying points
     p_l, p_r = None, None
+
     if circles[0, :][0][0] < circles[0, :][1][0]:
         p_l = (circles[0, :][0][0], circles[0, :][0][1])
         p_r = (circles[0, :][1][0], circles[0, :][1][1])
@@ -172,7 +176,6 @@ for f in os.listdir("./data/test"):
     rot_angle = np.arctan((p_r[1] - mid_p[1]) / (p_r[0] - mid_p[0]))
     rot_angle = rot_angle * 180 / np.pi
 
-    print(f)
     #print(rot_angle)
 
     rot_blurred = rotate_bound(blurred, rot_angle)
