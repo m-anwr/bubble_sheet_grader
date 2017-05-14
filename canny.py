@@ -153,7 +153,12 @@ for f in os.listdir("./data/test"):
 
     # should be 2 only
     if len(circles[0, :]) is not 2:
-        next
+        circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1, 30,
+                               param1=100, param2=40,
+                               minRadius=20, maxRadius=50)
+        circles = np.uint16(np.around(circles))
+        if len(circles[0, :]) is not 2:
+            next
 
     # getting rotation angle
 
