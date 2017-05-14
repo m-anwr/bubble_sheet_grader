@@ -6,7 +6,7 @@ S_10_hppscan115.png,36
 S_10_hppscan120.png,38
 S_10_hppscan121.png,32
 S_10_hppscan127.png,34
-S_10_hppscan16.png,38
+S_10_hppscan16.png,36
 S_10_hppscan18.png,28
 S_11_hppscan112.png,30
 S_11_hppscan114.png,33
@@ -41,11 +41,11 @@ S_12_hppscan131.png,24
 S_12_hppscan132.png,30
 S_13_hppscan1.png,38
 S_13_hppscan113.png,32
-S_13_hppscan114.png,28
+S_13_hppscan114.png,27
 S_13_hppscan115.png,30
 S_13_hppscan119.png,31
 S_13_hppscan12.png,31
-S_13_hppscan120.png,34
+S_13_hppscan120.png,33
 S_13_hppscan121.png,28
 S_13_hppscan122.png,34
 S_13_hppscan127.png,27
@@ -88,7 +88,7 @@ S_17_hppscan122.png,33
 S_17_hppscan127.png,19
 S_17_hppscan128.png,35
 S_17_hppscan13.png,31
-S_17_hppscan131.png,21
+S_17_hppscan131.png,20
 S_17_hppscan16.png,28
 S_17_hppscan17.png,33
 S_18_hppscan1.png,25
@@ -96,7 +96,7 @@ S_18_hppscan111.png,34
 S_18_hppscan113.png,27
 S_18_hppscan119.png,18
 S_18_hppscan121.png,29
-S_18_hppscan127.png,28
+S_18_hppscan127.png,29
 S_18_hppscan129.png,33
 S_18_hppscan18.png,37
 S_19_hppscan1.png,25
@@ -110,7 +110,7 @@ S_1_hppscan114.png,30
 S_1_hppscan116.png,26
 S_1_hppscan117.png,36
 S_1_hppscan119.png,27
-S_1_hppscan12.png,27
+S_1_hppscan12.png,25
 S_1_hppscan120.png,33
 S_1_hppscan121.png,32
 S_1_hppscan122.png,29
@@ -133,16 +133,16 @@ S_20_hppscan130.png,37
 S_20_hppscan14.png,35
 S_20_hppscan141.png,28
 S_21_hppscan111.png,25
-S_21_hppscan112.png,31
+S_21_hppscan112.png,30
 S_21_hppscan114.png,30
 S_21_hppscan116.png,27
 S_21_hppscan118.png,26
-S_21_hppscan119.png,42
-S_21_hppscan121.png,28
+S_21_hppscan119.png,43
+S_21_hppscan121.png,29
 S_21_hppscan124.png,28
 S_21_hppscan127.png,31
 S_21_hppscan13.png,36
-S_21_hppscan132.png,24
+S_21_hppscan132.png,23
 S_21_hppscan15.png,39
 S_21_hppscan16.png,35
 S_21_hppscan17.png,23
@@ -165,7 +165,7 @@ S_23_hppscan12.png,26
 S_23_hppscan123.png,30
 S_23_hppscan126.png,27
 S_23_hppscan129.png,30
-S_23_hppscan132.png,22
+S_23_hppscan132.png,23
 S_23_hppscan17.png,39
 S_24_hppscan111.png,35
 S_24_hppscan115.png,39
@@ -207,7 +207,7 @@ S_3_hppscan14.png,30
 S_3_hppscan140.png,40
 S_3_hppscan141.png,23
 S_3_hppscan15.png,32
-S_3_hppscan17.png,31
+S_3_hppscan17.png,32
 S_4_hppscan1.png,27
 S_4_hppscan117.png,40
 S_4_hppscan119.png,37
@@ -216,7 +216,7 @@ S_4_hppscan127.png,24
 S_4_hppscan129.png,24
 S_4_hppscan19.png,28
 S_5_hppscan1.png,24
-S_5_hppscan111.png,34
+S_5_hppscan111.png,33
 S_5_hppscan113.png,27
 S_5_hppscan116.png,32
 S_5_hppscan117.png,28
@@ -227,7 +227,7 @@ S_5_hppscan127.png,27
 S_5_hppscan129.png,30
 S_5_hppscan134.png,40
 S_5_hppscan138.png,25
-S_5_hppscan140.png,26
+S_5_hppscan140.png,27
 S_5_hppscan143.png,30
 S_5_hppscan15.png,29
 S_5_hppscan17.png,31
@@ -263,7 +263,7 @@ S_7_hppscan139.png,39
 S_7_hppscan14.png,20
 S_7_hppscan141.png,39
 S_7_hppscan142.png,36
-S_8_hppscan1.png,33
+S_8_hppscan1.png,34
 S_8_hppscan113.png,29
 S_8_hppscan114.png,30
 S_8_hppscan115.png,34
@@ -280,7 +280,7 @@ S_9_hppscan117.png,32
 S_9_hppscan121.png,35
 S_9_hppscan122.png,36
 S_9_hppscan123.png,28
-S_9_hppscan126.png,17
+S_9_hppscan126.png,16
 S_9_hppscan127.png,14
 S_9_hppscan16.png,34
 S_9_hppscan19.png,24
